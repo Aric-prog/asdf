@@ -1,0 +1,11 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "CodeLens (Launch) - asdf",
+            "request": "launch",
+            "mainClass": "asdf",
+            "projectName": "Projects_ba8a82e2"
+        }
+    ]
+}
