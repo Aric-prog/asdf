@@ -22,6 +22,6 @@ class date:
 
     toString = lambda self : str(self.__day).zfill(2) + "/" + str(self.__month).zfill(2) + "/" + str(self.__year).zfill(4)
 
-anying = date(1,2,3)
-print(anying.toString())
+a = date(1,2,3)
+print(a.toString())
 

@@ -27,8 +27,10 @@ class time:
 
         z += 1
         if(z >= 60):
+            z = 0
             y +=1
         if(y >= 60):
+            y = 0
             x += 1
         if(x >=24):
             x = 0
@@ -48,7 +50,13 @@ class time:
             y =59
             x-=1
         if(x < 0):
-            x =59
+            x =23
         
         return time(x,y,z)
 
+a = time(0,0,0)
+print(a.toString())
+b = a.nextSecond()
+print(b.toString())
+c = a.previousSecond()
+print(c.toString())
