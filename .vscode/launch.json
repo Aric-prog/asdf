@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "CodeLens (Launch) - hiworld",
+            "request": "launch",
+            "mainClass": "hiworld",
+            "projectName": "Projects_ba8a82e2"
+        },
+        {
+            "type": "java",
             "name": "CodeLens (Launch) - asdf",
             "request": "launch",
             "mainClass": "asdf",

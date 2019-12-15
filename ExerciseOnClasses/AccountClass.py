@@ -31,6 +31,6 @@ account2 = account("1234", "jeremy", 0)
 print(account1.transferTo(account2, 50000))
 print(account1.credit(30000))
 print(account2.toString())
-        
+
 
 
