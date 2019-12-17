@@ -7,4 +7,4 @@ with open('BookExample.txt','r',encoding= 'utf-8') as a:
     for i in wordArray:
         for characters in i:
             count += 1
-    print(count / len(wordArray))    
+    print(count / len(wordArray))

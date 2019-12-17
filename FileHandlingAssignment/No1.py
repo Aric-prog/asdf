@@ -1,13 +1,17 @@
+import string
 hapaxCandidate : dict = {}
 with open('BookExample.txt','r',encoding= 'utf-8') as a:
     count = 0
     rawLines = a.read()
-    rawLines = rawLines.replace('“',"").replace('”',"").replace('’',"").replace('!',"").replace('.',"").replace(':',"")
+    rawLines = rawLines.replace("\n"," ")
+    for i in string.punctuation:
+        rawLines = rawLines.replace(i,"")
     
     wordArray = rawLines.split()
     hapax = []
     for a in wordArray:
         wordArray[wordArray.index(a)] = a.upper()
+        
     for i in wordArray:
         if i not in hapaxCandidate:
             hapaxCandidate[i] = 1
