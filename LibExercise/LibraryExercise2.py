@@ -28,6 +28,7 @@ for a in intervalsAndSums:
     intervalValues.append(intervalsAndSums[a]/61)
 print("The interval with maximum steps is : ")
 maxValue = max(intervalValues)
+print(intervalsAndSums)
 print("Interval : " + intervalKeys[intervalValues.index(maxValue)])
 print("Averaged Step : " + str(maxValue))
 plt.bar(intervalKeys,intervalValues)
