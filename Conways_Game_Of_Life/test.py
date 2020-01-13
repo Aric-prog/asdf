@@ -11,12 +11,12 @@ BLACK = (0,0,0)
 done = False
 
 class grid:
-    def __init__(self,gridHeight = 16,gridWidth = 16,cellSize = 20,cellMargin = 1):
+    def __init__(self,gridHeight = 16,gridWidth = 16,cellSize = 20):
         self.gridHeight : int = gridHeight
         self.gridWidth  : int = gridWidth
 
         self.cellSize  = cellSize
-        self.cellMargin = cellMargin
+        self.cellMargin = 1
 
         self.gridArr = [[0 for x in range(self.gridWidth)] for y in range (self.gridHeight)]
 
@@ -27,8 +27,7 @@ class grid:
         space = "  "
         print("+",end="\t")
         for i in range(self.gridWidth):
-            # checks if the index number is greater or equal than 10
-            # 
+            # reduces the space if the index is bigger or equal than 10
             if(i>=10):
                 space = " "
             print(i, end = space)
@@ -43,9 +42,9 @@ class grid:
                 else:
                     print("-",end = "  ")
             print()
-
+            
     def setLive(self,x,y):
-        gridArr[x][y] = 1
+        self.gridArr[x][y] = 1
 
     # returns a list of neighbouring coordinates of the selected point
     def neighbourIterator(self,yCoord,xCoord) -> list:
@@ -108,10 +107,9 @@ class grid:
             return self.gridArr
 
         with open(filename+".txt",'r') as txtfile:
-
             # reads the file into a list, separated by lines
             lines = txtfile.readlines()
-            
+
             # removes \n from the lines, and creates a separates the elements per line
             # for example ["0,0,0"] will become [0,0,0] with each 0 being a different element instead of one string
             newGrid = [lines[n].replace("\n","").split(',') for n in range(len(lines))]
@@ -129,13 +127,12 @@ class grid:
     # runs the main loop to add live cells
     def setupGrid(self):
         while True:
-            clear()
 
             print("1. Input live cell")
             print("2. Read from file")
             print("3. Finish")
-
-
+            
+            self.displayGrid()
             option = int(input("Pick option no : "))
 
             if(option == 1):
@@ -145,45 +142,51 @@ class grid:
 
                     # checks if the input is valid, and not exceeding the array index, border is subtracted by 1 to account for the array
                     assert(isinstance(a,int) and isinstance(b,int))
-                    assert((a < 0 or a > self.gridHeight-1) or (b < 0 or b > self.gridWidth-1))
-                
+                    assert((not (a < 0 or a > self.gridHeight-1)) or (not (b < 0 or b > self.gridWidth-1)))
                     self.setLive(a,b)
+
                 except AssertionError:
+                    clear()
                     print("Invalid Input")
                     input("Press Enter to continue")
-                    clear()
                     continue
                 
             # prompts the user to insert the name of the file,and replaces the grid with the one read
             elif(option == 2):
                 filename = str(input("Insert filename (file must be .txt extension)"))
                 self.gridArr = self.reader(filename)
-
+            
             elif(option == 3):
                 break
-
-            displayGrid(self.gridArr,self.gridWidth)
-            input("Press Enter to continue")
-
+                
+# creates a grid object
 def initializeNewGrid():
-    dataKeywords = ['gridHeight','gridWidth','cellSize','cellMargin']
+    dataKeywords = ['gridHeight','gridWidth','cellSize']
     gridDatas = {}
-    for i in range(len(dataKeywords)):
+
+    # creates a dictionary, with the key originating from dataKeywords
+    # this dictionary will then be used as a keyword argument
+    for i in dataKeywords:
         dataEntered = False
         while not dataEntered:
             clear()
             print("Enter 0 to for default value")
+            
+            # checks for invalid input 
             try:
-                gridData = int(input("Enter " +dataKeywords[i]+ " : "))
+                gridData = int(input("Enter " + i + " : "))
                 if(gridData != 0):
-                    gridDatas[dataKeywords[i]] = gridData
+                    gridDatas[i] = gridData
                     dataEntered = True
                 else:
                     dataEntered = True
             except:
                 continue
+
+    # creates a grid object, with the information provided by the dictionary
     grids.append(grid(**gridDatas))
 
+# runs the main loop
 while True:
     clear()
     print("What would you like to do : ")
@@ -208,55 +211,67 @@ while True:
 # initializes pygame
 pygame.init()
 clock = pygame.time.Clock()
+
 tick = 0
 generation = 0
-index = 0
+gridsIndex = 0
 
+gridArr = grids[gridsIndex].gridArr
 
-gridArr = grids[index].gridArr
 while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
+        
+        # if space is pressed, change the grid
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-            index = index+1 if index < len(grids)-1 else 0
-            gridArr = grids[index].gridArr
+            gridsIndex = gridsIndex+1 if gridsIndex < len(grids)-1 else 0
+            gridArr = grids[gridsIndex].gridArr
             
-
-    # gets all of the info from the selected grid
-    gridWidth = grids[index].gridWidth
-    gridHeight = grids[index].gridHeight
-    cellSize = grids[index].cellSize
-    cellMargin = grids[index].cellMargin
+    # gets all of the data from the selected grid
+    gridWidth = grids[gridsIndex].gridWidth
+    gridHeight = grids[gridsIndex].gridHeight
+    cellSize = grids[gridsIndex].cellSize
+    cellMargin = grids[gridsIndex].cellMargin
+    cellWithMargin = cellSize + cellMargin
     
     # calculates the size of the screen thats going to be displayed
-    screenWidth = gridWidth*(cellSize+cellMargin)+1
-    screenHeight = gridHeight*(cellSize+cellMargin)+1
+    screenWidth = gridWidth * (cellSize + cellMargin)
+    screenHeight = gridHeight * (cellSize + cellMargin)
     screen = pygame.display.set_mode((screenWidth,screenHeight))
 
     # fills the background with black color
-    screen.fill(BLACK)
+    screen.fill(WHITE)
+
+    verticalLinesDrawn = False
+    horizontalLinesDrawn = False
+    for y in range(gridHeight):
+        if(not verticalLinesDrawn):
+            for x in range(gridWidth):
+                pygame.draw.line(screen , BLACK , (x * cellWithMargin,0) , (x * cellWithMargin ,screenHeight))
+        verticalLinesDrawn = True
+        pygame.draw.line(screen , BLACK , (0,y * cellWithMargin) , (screenWidth,y * cellWithMargin))
 
     # draws the block into display
-    
     for y in range(gridHeight):
         for x in range(gridWidth):
             if(gridArr[y][x]):
-                pygame.draw.rect(screen,GREEN,((cellMargin + cellSize)* x + cellMargin , (cellMargin + cellSize)* y + cellMargin,cellSize,cellSize))
+                pygame.draw.rect(screen,GREEN,(cellWithMargin * x + cellMargin, cellWithMargin * y + cellMargin,cellSize,cellSize))
                 continue
-            pygame.draw.rect(screen,WHITE,((cellMargin + cellSize)* x + cellMargin , (cellMargin + cellSize)* y + cellMargin ,cellSize,cellSize))
-    
+               
+            
     # shows the number of generation on the caption
     pygame.display.set_caption('Gen : ' + str(generation))
     
     # for every second, adds the number of generation, and gets the next generation of grid
     tick +=1
-    if(tick % 60 == 0):
+    if(tick % 10 == 0):
         tick = 0
         generation += 1
         
         # calculates the next generation of grid and replaces the old one
-        gridArr = grids[index].nextGeneration()
+        gridArr = grids[gridsIndex].nextGeneration()
+        grids[gridsIndex].gridArr = gridArr
 
     clock.tick(60)
     pygame.display.flip()
